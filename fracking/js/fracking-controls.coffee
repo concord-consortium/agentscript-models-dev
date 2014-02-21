@@ -151,6 +151,7 @@ class FrackingControls
         [255,   0, 255]]
 
     @outputGraph = LabGrapher '#output-graph', outputOptions
+    $('#output-graph').append '<a href="#" class="show-key">show key</a>'
 
     # start the graph with four lines, each at 0,0
     @outputGraph.addSamples [0, 0, 0, 0]
@@ -190,6 +191,7 @@ class FrackingControls
           [255,   0, 255]]
 
       @contaminantGraph = LabGrapher '#contaminant-graph', contaminantOptions
+      $('#contaminant-graph').append '<a href="#" class="show-key">show key</a>'
 
       # start the graph with just methane in water
       @contaminantGraph.addSamples [FrackingModel.baseMethaneInWater, 0]
