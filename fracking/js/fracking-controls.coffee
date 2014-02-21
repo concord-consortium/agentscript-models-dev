@@ -153,6 +153,9 @@ class FrackingControls
     @outputGraph = LabGrapher '#output-graph', outputOptions
     $('#output-graph').append '<a href="#" class="show-key">show key</a>'
 
+    $('#output-graph a.show-key').click ->
+      $('<div class="key"><a class="icon-remove-sign icon-large"></a><canvas></canvas></div>').appendTo($(document.body)).draggable()
+
     # start the graph with four lines, each at 0,0
     @outputGraph.addSamples [0, 0, 0, 0]
 

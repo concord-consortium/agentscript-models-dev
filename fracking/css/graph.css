@@ -39,7 +39,35 @@ div.graph {
   text-decoration: underline;
   color: #1B7FC3;
 }
+
+.key {
+  width: 10em;
+  height: 4em;
+  position: absolute;
+  border: none;
+  /* need to be higher than div#mouse-catcher */
+  z-index: 11;
+  background-color: white;
+}
+
+.icon-remove-sign {
+  color: #333;
+  position: absolute;
+  right: -0.6em;
+  top: -0.6em;
+  background-color: white;
+  padding: 0.15em;
+  border-radius: 1em;
+}
+
+.icon-remove-sign:hover {
+  color: black;
+}
+.icon-remove-sign:active {
+  color: black;
+}
 /** end styles for "show key" link */
+
 
 .graph {
   position: relative;
