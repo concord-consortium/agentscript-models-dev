@@ -43,19 +43,20 @@ class OceanClimateModel extends ClimateModel
     @earthPatches =        (p for p in @patches when p.y <  @earthTop and p.x < @oceanLeft)
     @oceanPatches =        (p for p in @patches when p.y <  @earthTop and p.x >= @oceanLeft)
 
-    p.color = [255, 200, 200] for p in @earthPatches
-
-    for p in @oceanPatches
-      if      p.y == @patches.minY   then p.color = [5, 5, 100]
-      else if p.y == @patches.minY+1 then p.color = [10, 10, 150]
-      else if p.y  < @patches.minY+4 then p.color = [20, 20, 200]
-      else p.color = [30, 30, 240]
+    @setColorOfOceanPatches()
 
     @updateAlbedoOfSurface()
     @createCO2(13)
     @createVapor(5) if @includeVapor
     @createHeat(23)
     @draw()
+
+  setColorOfOceanPatches: ->
+    for p in @oceanPatches
+      if      p.y == @patches.minY   then p.color = [5, 5, 100]
+      else if p.y == @patches.minY+1 then p.color = [10, 10, 150]
+      else if p.y  < @patches.minY+4 then p.color = [20, 20, 200]
+      else p.color = [30, 30, 240]
 
   setIncludeWaterVapor: (b) ->
     @includeVapor = b

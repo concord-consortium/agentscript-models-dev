@@ -70,28 +70,38 @@ class ClimateModel extends ABM.Model
     @volcanoes.setDefaultColor [0,0,0]
     @volcanoes.setDefaultSize 1
 
-    @spacePatches =        (p for p in @patches when p.y == @patches.maxY)
-    @skyTopPatches =       (p for p in @patches when p.y <  @patches.maxY && p.y > @skyTop)
-    @skyPatches =          (p for p in @patches when p.y <= @skyTop && p.y > @earthTop)
+    @skyPatches =          (p for p in @patches when p.y > @earthTop)
     @earthSurfacePatches = (p for p in @patches when p.y == @earthTop)
     @earthPatches =        (p for p in @patches when p.y <  @earthTop)
 
-    p.color = [0, 0, 0] for p in @spacePatches
+    @drawBackground()
 
-    for p in @skyTopPatches
-      p.color = [196, 196, 196] if p.y == @skyTop + 1
-      p.color = [128, 128, 128] if p.y == @skyTop + 2
-      p.color = [64, 64, 64]    if p.y == @skyTop + 3
-      p.color = [32, 32, 32]    if p.y == @skyTop + 4
-
-    p.color = [100, 150, 255] for p in @skyPatches
-    p.color = [255, 200, 200] for p in @earthPatches
-    @updateAlbedoOfSurface()
     @createVolcano()
     @createCO2(13)
     @createHeat(15)
 
     @draw()
+
+
+  drawBackground: ->
+
+    # need to draw the 3 images in the correct order, so wait till they're all loaded
+    dfds = ['img/earth.svg', 'img/ground.svg', 'img/sky.svg'].map (url) ->
+      dfd = $.Deferred()
+      u.importImage url, (img) -> dfd.resolve img
+      dfd
+
+    $.when(dfds...).then (earthImg, groundImg, skyImg) =>
+      ctx = ABM.drawing
+      p = ABM.patches
+      left = p.minX - 0.5
+      width = p.maxX - p.minX + 1
+      ctx.save()
+      ctx.scale 1, -1
+      ctx.drawImage skyImg, left, p.minY - 0.5, width, p.maxY - p.minY + 1
+      ctx.drawImage earthImg, left, p.maxY + 0.5, width, -@earthTop - p.maxY - 1
+      ctx.drawImage groundImg, left, -@earthTop - 1, width, 2
+      ctx.restore()
 
   setAlbedo: (percent) ->
     @albedo = percent
