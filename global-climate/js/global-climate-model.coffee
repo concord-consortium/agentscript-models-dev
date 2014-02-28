@@ -98,11 +98,16 @@ class ClimateModel extends ABM.Model
       ctx = ABM.drawing
       p = ABM.patches
       left = p.minX - 0.5
-      width = p.maxX - p.minX + 1
+      right = p.maxX + 0.5
+      width = right - left
+      # the only sensible way to understand these are as min/max; yMin is the top
+      yMin = p.minY - 0.5
+      yMax = p.maxY + 0.5
+
       ctx.save()
       ctx.scale 1, -1
-      ctx.drawImage @images['img/sky.svg'],    left, p.minY - 0.5,  width, p.maxY - p.minY + 1
-      ctx.drawImage @images['img/earth.svg'],  left, p.maxY + 0.5,  width, -@earthTop - p.maxY - 1
+      ctx.drawImage @images['img/sky.svg'], left, yMin,  width, yMax - yMin
+      ctx.drawImage @images['img/earth.svg'], left, yMax - (@earthTop - yMin),  width, @earthTop - yMin
       ctx.drawImage @images['img/ground.svg'], left, -@earthTop - 1, width, 2
       ctx.restore()
 
