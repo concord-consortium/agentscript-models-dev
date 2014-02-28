@@ -74,7 +74,7 @@ class ClimateModel extends ABM.Model
     @earthSurfacePatches = (p for p in @patches when p.y == @earthTop)
     @earthPatches =        (p for p in @patches when p.y <  @earthTop)
 
-    @drawBackground()
+    @drawBackgroundImages()
 
     @createVolcano()
     @createCO2(13)
@@ -82,25 +82,28 @@ class ClimateModel extends ABM.Model
 
     @draw()
 
-
-  drawBackground: ->
-
-    # need to draw the 3 images in the correct order, so wait till they're all loaded
-    dfds = ['img/earth.svg', 'img/ground.svg', 'img/sky.svg'].map (url) ->
+  loadBackgroundImages: ->
+    @images = []
+    @backgroundImageUrls.map (url) =>
       dfd = $.Deferred()
-      u.importImage url, (img) -> dfd.resolve img
+      u.importImage url, (img) =>
+        @images[url] = img
+        dfd.resolve img
       dfd
 
-    $.when(dfds...).then (earthImg, groundImg, skyImg) =>
+  backgroundImageUrls: ['img/earth.svg', 'img/ground.svg', 'img/sky.svg']
+
+  drawBackgroundImages: ->
+    $.when(@loadBackgroundImages()...).then =>
       ctx = ABM.drawing
       p = ABM.patches
       left = p.minX - 0.5
       width = p.maxX - p.minX + 1
       ctx.save()
       ctx.scale 1, -1
-      ctx.drawImage skyImg, left, p.minY - 0.5, width, p.maxY - p.minY + 1
-      ctx.drawImage earthImg, left, p.maxY + 0.5, width, -@earthTop - p.maxY - 1
-      ctx.drawImage groundImg, left, -@earthTop - 1, width, 2
+      ctx.drawImage @images['img/sky.svg'],    left, p.minY - 0.5,  width, p.maxY - p.minY + 1
+      ctx.drawImage @images['img/earth.svg'],  left, p.maxY + 0.5,  width, -@earthTop - p.maxY - 1
+      ctx.drawImage @images['img/ground.svg'], left, -@earthTop - 1, width, 2
       ctx.restore()
 
   setAlbedo: (percent) ->

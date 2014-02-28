@@ -51,6 +51,22 @@ class OceanClimateModel extends ClimateModel
     @createHeat(23)
     @draw()
 
+  backgroundImageUrls: ['img/earth.svg', 'img/ground.svg', 'img/sky.svg', 'img/ocean.png']
+
+  drawBackgroundImages: ->
+    $.when(@loadBackgroundImages()...).then =>
+      ctx = ABM.drawing
+      p = ABM.patches
+      left = p.minX - 0.5
+      width = p.maxX - p.minX + 1
+      ctx.save()
+      ctx.scale 1, -1
+      ctx.drawImage @images['img/sky.svg'],    left, p.minY - 0.5,  width, p.maxY - p.minY + 1
+      ctx.drawImage @images['img/earth.svg'],  left, p.maxY + 0.5,  width, -@earthTop - p.maxY - 1
+      ctx.drawImage @images['img/ground.svg'], left, -@earthTop - 1, width, 2
+      ctx.drawImage @images['img/ocean.png'],  left, p.maxY + 0.5,  width, -@earthTop - p.maxY - 1
+      ctx.restore()
+
   setColorOfOceanPatches: ->
     for p in @oceanPatches
       if      p.y == @patches.minY   then p.color = [5, 5, 100]
