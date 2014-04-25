@@ -115,8 +115,18 @@ class ErosionEngine
       # 3  -  4
       # 0  1  2
 
-      if p.x is @patches.minX and p.direction is -1 or p.x is @patches.maxX and p.direction is 1
-        # We're moving off the edge, so disappear (no target)
+      if p.x is @patches.minX and p.direction is -1
+        # Trying a very simple formula. Basic idea is to extrapolate height to left of leftmost
+        # patch of model, *without* using the leftmost patch itself to determine that height.
+        expectedHeightToLeft = 2 * @surfaceLand[1].y - @surfaceLand[3].y
+        # if land is expected to be higher to the left, we can't erode leftwards
+        continue if expectedHeightToLeft >= p.y
+        # we'll move left and leave the model (p will become sky but not be cloned to a target)
+        target = null
+      else if p.x is @patches.maxX and p.direction is 1
+        lastIndex = @surfaceLand.length - 1
+        expectedHeightToRight = 2 * @surfaceLand[lastIndex - 1].y - @surfaceLand[lastIndex - 3].y
+        continue if expectedHeightToRight >= p.y
         target = null
       else if p.n[1+p.direction]?.type is SKY
         # move downward and in the previous lateral direction
@@ -244,7 +254,6 @@ class ErosionEngine
       if p.isTopsoil
         count++
         if p.x < 0 then ret[1]++ else ret[2]++
-    console.log count
     ret
 
 window.ErosionEngine = ErosionEngine
